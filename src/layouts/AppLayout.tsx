@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-
+import { ToastContainer } from "react-toastify";
 import Logo from "../components/Logo";
 import NavMenu from "../components/NavMenu";
 
@@ -22,6 +22,7 @@ export default function AppLayout() {
           Todos los derechos reservados {new Date().getFullYear()}
         </p>
       </footer>
+      <ToastContainer/>
     </>
   )
 }
