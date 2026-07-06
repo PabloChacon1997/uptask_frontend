@@ -1,12 +1,50 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+
+import TaskForm from './TaskForm';
+import type { TaskFormData } from '../../types';
+import { createTask } from '../../api/TaskAPI';
 
 export default function AddTaskModal() {
+  const navigate = useNavigate();
+
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const modalTask = queryParams.get('newTask');
+  const show = modalTask ? true: false
+
+  const params = useParams()
+  const projectId= params.projectId!
+
+  const initialValues: TaskFormData = {
+    name: '',
+    description: ''
+  }
+
+  const { register, handleSubmit, formState: { errors } } = useForm({defaultValues: initialValues})
+
+  const { mutate } = useMutation({
+    mutationFn: createTask,
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success('Tarea creada')
+    },
+  })
+
+  const handleCreateTask = (formData: TaskFormData) => {
+    console.log(formData);
+  }
 
   return (
     <>
-      <Transition appear show={true} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => { }}>
+      <Transition appear show={show} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={() => navigate(location.pathname, { replace: true })}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -41,6 +79,20 @@ export default function AddTaskModal() {
                     <p className="text-xl font-bold">Llena el formulario y crea  {''}
                       <span className="text-fuchsia-600">una tarea</span>
                     </p>
+
+                    <form
+                      onSubmit={handleSubmit(handleCreateTask)}
+                      className='mt-10 space-y-3'
+                      noValidate
+                    >
+
+                      <TaskForm register={register} errors={errors} />
+                      <input
+                        type="submit"
+                        value={'Guardar tarea'}
+                        className="bg-fuchsia-600 hover:bg-fuchsia-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors"
+                      />
+                    </form>
 
                   </Dialog.Panel>
                 </Transition.Child>
