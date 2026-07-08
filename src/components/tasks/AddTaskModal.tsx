@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
 import TaskForm from './TaskForm';
@@ -25,7 +25,9 @@ export default function AddTaskModal() {
     description: ''
   }
 
-  const { register, handleSubmit, formState: { errors } } = useForm({defaultValues: initialValues})
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({defaultValues: initialValues})
+
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: createTask,
@@ -33,12 +35,19 @@ export default function AddTaskModal() {
       toast.error(error.message);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['editProject', projectId] })
       toast.success('Tarea creada')
+      reset();
+      navigate(location.pathname, { replace: true })
     },
   })
 
   const handleCreateTask = (formData: TaskFormData) => {
-    console.log(formData);
+    const data = {
+      formData,
+      projectId
+    }
+    mutate(data);
   }
 
   return (

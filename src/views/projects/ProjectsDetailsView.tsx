@@ -3,6 +3,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom"
 
 import { getProjectById } from "../../api/ProjectAPI"
 import AddTaskModal from "../../components/tasks/AddTaskModal";
+import TaskList from "../../components/tasks/TaskList";
+import EditTaskData from "../../components/tasks/EditTaskData";
 
 export default function ProjectDetailsView() {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ export default function ProjectDetailsView() {
   const projectId = params.projectId!
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['editProject', projectId],
+    queryKey: ['project', projectId],
     queryFn: () =>  getProjectById(projectId),
     retry: false,
   })
@@ -29,8 +31,11 @@ export default function ProjectDetailsView() {
           onClick={() => navigate(location.pathname + '?newTask=true')}
         >Agregar Tarea</button>
       </nav>
-
+      <TaskList
+        tasks={data.tasks}
+      />
       <AddTaskModal />
+      <EditTaskData />
     </>
   )
 }
