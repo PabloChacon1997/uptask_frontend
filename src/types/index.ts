@@ -5,12 +5,13 @@ import z from "zod";
 
 
 export const taskStatusSchema = z.enum(["PENDING","ON_HOLD","IN_PROGRESS","UNDER_REVIEW","COMPLETED"])
+export type TaskStatus = z.infer<typeof taskStatusSchema>;
 
 export const taskSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
-  prjectId: z.string(),
+  projectId: z.string(),
   status: taskStatusSchema,
 });
 
