@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-import type { ConfirmToken, UserRegistrationForm } from "../types";
+import type { ConfirmToken, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
 import api from "../lib/axios";
 
 
@@ -22,6 +22,33 @@ export async function confirmAccount(formData: ConfirmToken) {
   try {
     const url = '/auth/confirm-account';
     const {data} = await api.post<string>(url, formData);
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function requestConfirmationCode(formData: RequestConfirmationCodeForm) {
+  try {
+    const url = '/auth/request-code';
+    const {data} = await api.post<string>(url, formData);
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function authenticationUser(formData: UserLoginForm) {
+  try {
+    const url = '/auth/login';
+    const {data} = await api.post(url, formData);
+    console.log(data)
     return data
   } catch (error) {
     if(isAxiosError(error) && error.response) {
