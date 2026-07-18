@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-import type { ConfirmToken, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
+import type { ConfirmToken, ForgotPasswordForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
 import api from "../lib/axios";
 
 
@@ -48,7 +48,19 @@ export async function authenticationUser(formData: UserLoginForm) {
   try {
     const url = '/auth/login';
     const {data} = await api.post(url, formData);
-    console.log(data)
+    return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function forgotPassword(formData: ForgotPasswordForm) {
+  try {
+    const url = '/auth/forgot-password';
+    const {data} = await api.post(url, formData);
     return data
   } catch (error) {
     if(isAxiosError(error) && error.response) {
