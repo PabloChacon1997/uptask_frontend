@@ -19,8 +19,8 @@ export default function NewPasswordToken({ setToken, setIsValidToken }: NewPassw
     onError: (error) => {
       toast.error(error.message)
     },
-    onSuccess: (data) => {
-      toast.success(data)
+    onSuccess: () => {
+      toast.success('Iniciando sesion')
       setIsValidToken(true);
     },
   })

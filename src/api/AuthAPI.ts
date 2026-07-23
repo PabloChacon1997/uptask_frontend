@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-import type { ConfirmToken, ForgotPasswordForm, NewPasswordForm, RequestConfirmationCodeForm, UserLoginForm, UserRegistrationForm } from "../types";
+import { userSchema, type ConfirmToken, type ForgotPasswordForm, type NewPasswordForm, type RequestConfirmationCodeForm, type User, type UserLoginForm, type UserRegistrationForm } from "../types";
 import api from "../lib/axios";
 
 
@@ -48,6 +48,7 @@ export async function authenticationUser(formData: UserLoginForm) {
   try {
     const url = '/auth/login';
     const {data} = await api.post(url, formData);
+    localStorage.setItem('AUTH_TOKEN', data);
     return data
   } catch (error) {
     if(isAxiosError(error) && error.response) {
@@ -88,6 +89,21 @@ export async function updatePasswordWithToken({formData, token}: {formData: NewP
     const url = `/auth/update-password/${token}`;
     const {data} = await api.post(url, formData);
     return data
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function getUser() {
+  try {
+    const {data} = await api<User>('/auth/user');
+    const response = userSchema.safeParse(data);
+    if(response.success) {
+      return data
+    }
   } catch (error) {
     if(isAxiosError(error) && error.response) {
       // eslint-disable-next-line preserve-caught-error
