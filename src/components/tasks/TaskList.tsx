@@ -4,6 +4,7 @@ import TaskCard from "./TaskCard"
 
 type TaskListrops = {
   tasks: Task[]
+  candEdit: boolean
 }
 
 
@@ -29,7 +30,7 @@ const statusStyles: { [key: string]: string} = {
 }
 
 
-export default function TaskList({ tasks }: TaskListrops) {
+export default function TaskList({ tasks, candEdit }: TaskListrops) {
   const groupedTasks = tasks.reduce((acc, task) => {
     let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
     currentGroup = [...currentGroup, task]
@@ -50,7 +51,7 @@ export default function TaskList({ tasks }: TaskListrops) {
               {tasks.length === 0 ? (
                 <li className="text-gray-500 text-center pt-3">No Hay tareas</li>
               ) : (
-                tasks.map(task => <TaskCard key={task.id} task={task} />)
+                tasks.map(task => <TaskCard key={task.id} task={task} candEdit={candEdit} />)
               )}
             </ul>
           </div>

@@ -44,3 +44,17 @@ export async function getProjectTeam(projectId: Project['id'] ) {
     }
   }
 }
+
+
+export async function removeUserFromProject({projectId, userId}: { projectId: Project['id'], userId: TeamMember['id'] }) {
+  try {
+    const url = `/projects/${projectId}/team/${userId}`;
+    const { data } = await api.delete<string>(url);
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error);
+    }
+  }
+}
