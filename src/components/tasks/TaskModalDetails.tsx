@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { getTaskById, updateStatus } from '../../api/TaskAPI';
 import { statusTranslations } from '../../locales/es';
 import type { TaskStatus } from '../../types';
+import { formatDate } from '../../utils/utils';
+import NotesPanel from '../notes/NotesPanel';
 
 
 export default function TaskModalDetails() {
@@ -86,14 +88,22 @@ export default function TaskModalDetails() {
                   leaveTo="opacity-0 scale-95"
                 >
                   <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-16">
-                    <p className='text-sm text-slate-400'>Agregada el: </p>
-                    <p className='text-sm text-slate-400'>Última actualización: </p>
+                    <p className='text-sm text-slate-400'>Agregada el: {formatDate(data.created_at)}</p>
+                    <p className='text-sm text-slate-400'>Última actualización: {formatDate(data.updated_at)}</p>
                     <Dialog.Title
                       as="h3"
                       className="font-black text-4xl text-slate-600 my-5"
                     >{data.name}
                     </Dialog.Title>
                     <p className='text-lg text-slate-500 mb-2'>Descripción: {data.description}</p>
+                    {
+                      data.user && (
+                        <p>
+                          <span className='font-bold text-slate-600'>Estado actualizado por:</span>{' '}
+                          {data.user.name}
+                        </p>
+                      )
+                    }
                     <div className='my-5 space-y-3'>
                       <label className='font-bold'>Estado Actual:</label>
                       <select 
@@ -108,6 +118,7 @@ export default function TaskModalDetails() {
                         }
                       </select>
                     </div>
+                    <NotesPanel />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
