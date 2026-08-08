@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-import { userSchema, type ConfirmToken, type ForgotPasswordForm, type NewPasswordForm, type RequestConfirmationCodeForm, type User, type UserLoginForm, type UserRegistrationForm } from "../types";
+import { userSchema, type CheckPasswordForm, type ConfirmToken, type ForgotPasswordForm, type NewPasswordForm, type RequestConfirmationCodeForm, type User, type UserLoginForm, type UserRegistrationForm } from "../types";
 import api from "../lib/axios";
 
 
@@ -104,6 +104,18 @@ export async function getUser() {
     if(response.success) {
       return data
     }
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function checkPassword(formData: CheckPasswordForm) {
+  try {
+    const {data} = await api.post<string>('/auth/check-password', formData);
+    return data;
   } catch (error) {
     if(isAxiosError(error) && error.response) {
       // eslint-disable-next-line preserve-caught-error
