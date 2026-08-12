@@ -4,6 +4,7 @@ import { Fragment } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
+import { useDraggable } from '@dnd-kit/core'
 
 import type { Task } from "../../types"
 import { deleteById } from "../../api/TaskAPI"
@@ -15,6 +16,9 @@ type TaskCardProps = {
 }
 
 export default function TaskCard({ task, candEdit }: TaskCardProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id
+  })
   const navigate = useNavigate()
   const params = useParams()
   const projectId = params.projectId!;
@@ -31,9 +35,18 @@ export default function TaskCard({ task, candEdit }: TaskCardProps) {
       queryClient.invalidateQueries({queryKey: ['project', projectId]})
     },
   })
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px,${transform.y}px, 0)`
+  }: undefined;
   return (
-    <li className="p-5 bg-white border-slate-300 flex justify-between gap-3">
-      <div className="min-w-0 flex flex-col gap-y-4">
+    <li
+      ref={setNodeRef} 
+      style={style} 
+      className="p-5 bg-white border-slate-300 flex justify-between gap-3">
+      <div
+        {...listeners}
+        {...attributes}
+        className="min-w-0 flex flex-col gap-y-4">
         <button 
           type="button"
           className="text-xl font-bold text-slate-600 text-left"
