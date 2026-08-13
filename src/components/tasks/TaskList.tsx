@@ -1,9 +1,13 @@
 import { DndContext, type DragEndEvent } from "@dnd-kit/core"
+import { toast } from "react-toastify"
+import { useParams } from "react-router-dom"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { statusTranslations } from "../../locales/es"
-import type { Task } from "../../types"
+import type { Task, TaskStatus } from "../../types"
 import DropTask from "./DropTask"
 import TaskCard from "./TaskCard"
+import { updateStatus } from "../../api/TaskAPI"
 
 type TaskListrops = {
   tasks: Task[]
@@ -34,6 +38,22 @@ const statusStyles: { [key: string]: string} = {
 
 
 export default function TaskList({ tasks, candEdit }: TaskListrops) {
+
+  const params = useParams();
+  const projectId = params.projectId!;
+  const queryClient = useQueryClient()
+  ;
+  const { mutate } = useMutation({
+    mutationFn: updateStatus,
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success('Tarea actualizada')
+      queryClient.invalidateQueries({ queryKey: ['project', projectId] })
+    },
+  })
+
   const groupedTasks = tasks.reduce((acc, task) => {
     let currentGroup = acc[task.status] ? [...acc[task.status]] : [];
     currentGroup = [...currentGroup, task]
@@ -43,7 +63,27 @@ export default function TaskList({ tasks, candEdit }: TaskListrops) {
   const handleDragEnd = (event: DragEndEvent) => {
     const { over, active } = event
     if (over && over.id) {
-      console.log(active);
+      const taskId = active.id.toString();
+      const status = over.id as TaskStatus;
+      mutate({projectId, taskId, status})
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      queryClient.setQueryData(['project', projectId], (oldData: any) => {
+        const updatedTasks = oldData.tasks.map((task: Task) => {
+          if (task.id === taskId) {
+            return {
+              ...task,
+              status
+            }
+          }
+          return task
+        })
+
+        return {
+          ...oldData,
+          tasks: updatedTasks
+        }
+      })
     }
   }
 
