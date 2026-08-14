@@ -6,12 +6,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
 import { useDraggable } from '@dnd-kit/core'
 
-import type { Task } from "../../types"
+import type { TaskProject } from "../../types"
 import { deleteById } from "../../api/TaskAPI"
 
 
 type TaskCardProps = {
-  task: Task
+  task: TaskProject
   candEdit: boolean
 }
 

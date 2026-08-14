@@ -4,19 +4,19 @@ import { useParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { statusTranslations } from "../../locales/es"
-import type { Task, TaskStatus } from "../../types"
+import type { Project, TaskProject, TaskStatus } from "../../types"
 import DropTask from "./DropTask"
 import TaskCard from "./TaskCard"
 import { updateStatus } from "../../api/TaskAPI"
 
 type TaskListrops = {
-  tasks: Task[]
+  tasks: TaskProject[]
   candEdit: boolean
 }
 
 
 type GroupedTasks = {
-  [key: string]: Task[]
+  [key: string]: TaskProject[]
 }
 const initialStatusGroups: GroupedTasks = {
   PENDING: [],
@@ -67,9 +67,8 @@ export default function TaskList({ tasks, candEdit }: TaskListrops) {
       const status = over.id as TaskStatus;
       mutate({projectId, taskId, status})
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      queryClient.setQueryData(['project', projectId], (oldData: any) => {
-        const updatedTasks = oldData.tasks.map((task: Task) => {
+      queryClient.setQueryData(['project', projectId], (oldData: Project) => {
+        const updatedTasks = oldData.tasks.map((task) => {
           if (task.id === taskId) {
             return {
               ...task,

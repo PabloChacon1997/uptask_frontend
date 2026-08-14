@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom"
+import { useMemo } from "react";
 
-import { getProjectById } from "../../api/ProjectAPI"
+import { getFullProject } from "../../api/ProjectAPI"
 import AddTaskModal from "../../components/tasks/AddTaskModal";
 import TaskList from "../../components/tasks/TaskList";
 import EditTaskData from "../../components/tasks/EditTaskData";
 import TaskModalDetails from "../../components/tasks/TaskModalDetails";
 import { useAuth } from "../../hooks/useAuth";
 import { isManger } from "../../utils/policies";
-import { useMemo } from "react";
 
 export default function ProjectDetailsView() {
   const { data: user, isLoading: authLoading } = useAuth()
@@ -18,7 +18,7 @@ export default function ProjectDetailsView() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['project', projectId],
-    queryFn: () =>  getProjectById(projectId),
+    queryFn: () =>  getFullProject(projectId),
     retry: false,
   })
 

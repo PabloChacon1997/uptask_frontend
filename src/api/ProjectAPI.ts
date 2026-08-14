@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import api from "../lib/axios";
-import { dashboardprojectSchema, type Project, type ProjectFormData } from "../types";
+import { dashboardprojectSchema, editProjectShchema, projectSchema, type Project, type ProjectFormData } from "../types";
 
 
 export async function createProject(formData: ProjectFormData) {
@@ -35,11 +35,25 @@ export async function getProjects() {
 export async function getProjectById(id: Project['id']) {
   try {
     const { data } = await api(`/projects/${id}`);
-    // const response = editProjectShchema.safeParse(data);
-    // if (response.success) {
-    //   return response.data
-    // }
-    return data
+    const response = editProjectShchema.safeParse(data);
+    if (response.success) {
+      return response.data
+    }
+  } catch (error) {
+    if(isAxiosError(error) && error.response) {
+      // eslint-disable-next-line preserve-caught-error
+      throw new Error(error.response.data.error)
+    }
+  }
+}
+
+export async function getFullProject(id: Project['id']) {
+  try {
+    const { data } = await api(`/projects/${id}`);
+    const response = projectSchema.safeParse(data);
+    if (response.success) {
+      return response.data
+    }
   } catch (error) {
     if(isAxiosError(error) && error.response) {
       // eslint-disable-next-line preserve-caught-error
